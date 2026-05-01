@@ -2,9 +2,9 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
-from app.core.rabbitmq import connect_rabbitmq
+from app.core.rabbitmq import connect_rabbitmq, close_rabbitmq
 
-app = FastAPI()
+app = FastAPI(title="registration-service")
 
 cors_origins = os.getenv("CORS_ORIGINS", "*")
 allow_origins = [o.strip() for o in cors_origins.split(",")] if cors_origins != "*" else ["*"]
@@ -19,6 +19,14 @@ app.add_middleware(
 
 app.include_router(router, prefix="/auth")
 
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok", "service": "registration-service"}
+
 @app.on_event("startup")
 async def startup():
     await connect_rabbitmq()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await close_rabbitmq()
