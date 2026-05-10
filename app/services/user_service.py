@@ -28,7 +28,7 @@ class UserService:
             "email": data.email,
             "name": data.name,
             "password": hash_password(data.password),
-            "role": "ORGANIZER",
+            "role": (data.role or "attendee").lower(),
             "bio": "",
             "avatar_url": ""
         }
