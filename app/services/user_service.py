@@ -24,6 +24,14 @@ class UserService:
                 detail="User already exists"
             )
 
+        allowedRoles=["USER","ORGANIZER"]
+        role = data.role.upper()
+        if role not in allowed_roles:
+          raise HTTPException(
+        status_code=400,
+        detail="Invalid role"
+         )
+   
         user = {
             "email": data.email,
             "name": data.name,
